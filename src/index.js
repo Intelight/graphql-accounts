@@ -1,5 +1,7 @@
 // Heavily inspired by https://github.com/studiointeract/accounts-ui/
 
+/* eslint-disable max-len */
+
 import { each, keys, includes } from 'lodash';
 
 const Accounts = {};
@@ -29,11 +31,11 @@ Accounts.ui._options = {
   onPreSignUpHook: () => new Promise(resolve => resolve()),
   onPostSignUpHook: () => {},
   // TODO history agnostic redirects
-  //onEnrollAccountHook: () => redirect(`${Accounts.ui._options.loginPath}`),
-  //onResetPasswordHook: () => redirect(`${Accounts.ui._options.loginPath}`),
-  //onVerifyEmailHook: () => redirect(`${Accounts.ui._options.profilePath}`),
+  // onEnrollAccountHook: () => redirect(`${Accounts.ui._options.loginPath}`),
+  // onResetPasswordHook: () => redirect(`${Accounts.ui._options.loginPath}`),
+  // onVerifyEmailHook: () => redirect(`${Accounts.ui._options.profilePath}`),
   onSignedInHook: () => null,
-  onSignedOutHook: () => null
+  onSignedOutHook: () => null,
 };
 
 /**
@@ -45,7 +47,7 @@ Accounts.ui._options = {
  * @param {Object} options.forceApprovalPrompt If true, forces the user to approve the app's permissions, even if previously approved. Currently only supported with Google.
  * @param {String} options.passwordSignupFields Which fields to display in the user creation form. One of '`USERNAME_AND_EMAIL`', '`USERNAME_AND_OPTIONAL_EMAIL`', '`USERNAME_ONLY`', '`EMAIL_ONLY`', or '`NO_PASSWORD`' (default).
  */
-Accounts.ui.config = function(options) {
+Accounts.ui.config = (options) => {
   // validate options keys
   const VALID_KEYS = [
     'title',
@@ -68,47 +70,45 @@ Accounts.ui.config = function(options) {
     'onResetPasswordHook',
     'onVerifyEmailHook',
     'onSignedInHook',
-    'onSignedOutHook'
+    'onSignedOutHook',
   ];
 
-  each(keys(options), function (key) {
-    if (!includes(VALID_KEYS, key))
-      throw new Error("Accounts.ui.config: Invalid key: " + key);
+  each(keys(options), (key) => {
+    if (!includes(VALID_KEYS, key)) {
+      throw new Error(`Accounts.ui.config: Invalid key: ${key}`);
+    }
   });
 
   if (typeof options.title === 'string') {
     Accounts.ui._options.title = options.title;
   } else {
-    throw new Error("Accounts.ui.config: Invalid option for `title`: " + options.title)
+    throw new Error(`Accounts.ui.config: Invalid option for \`title\`: ${options.title}`);
   }
 
   // deal with `passwordSignupFields`
   if (options.passwordSignupFields) {
     if (includes([
-      "USERNAME_AND_EMAIL",
-      "USERNAME_AND_OPTIONAL_EMAIL",
-      "USERNAME_ONLY",
-      "EMAIL_ONLY",
-      "EMAIL_ONLY_NO_PASSWORD",
-      "USERNAME_AND_EMAIL_NO_PASSWORD"
+      'USERNAME_AND_EMAIL',
+      'USERNAME_AND_OPTIONAL_EMAIL',
+      'USERNAME_ONLY',
+      'EMAIL_ONLY',
+      'EMAIL_ONLY_NO_PASSWORD',
+      'USERNAME_AND_EMAIL_NO_PASSWORD',
     ], options.passwordSignupFields)) {
       Accounts.ui._options.passwordSignupFields = options.passwordSignupFields;
-    }
-    else {
-      throw new Error("Accounts.ui.config: Invalid option for `passwordSignupFields`: " + options.passwordSignupFields);
+    } else {
+      throw new Error(`Accounts.ui.config: Invalid option for \`passwordSignupFields\`: ${options.passwordSignupFields}`);
     }
   }
 
   // deal with `requestPermissions`
   if (options.requestPermissions) {
-    each(options.requestPermissions, function (scope, service) {
+    each(options.requestPermissions, (scope, service) => {
       if (Accounts.ui._options.requestPermissions[service]) {
-        throw new Error("Accounts.ui.config: Can't set `requestPermissions` more than once for " + service);
-      }
-      else if (!(scope instanceof Array)) {
-        throw new Error("Accounts.ui.config: Value for `requestPermissions` must be an array");
-      }
-      else {
+        throw new Error(`Accounts.ui.config: Can't set \`requestPermissions\` more than once for ${service}`);
+      } else if (!(scope instanceof Array)) {
+        throw new Error('Accounts.ui.config: Value for `requestPermissions` must be an array');
+      } else {
         Accounts.ui._options.requestPermissions[service] = scope;
       }
     });
@@ -116,14 +116,13 @@ Accounts.ui.config = function(options) {
 
   // deal with `requestOfflineToken`
   if (options.requestOfflineToken) {
-    each(options.requestOfflineToken, function (value, service) {
-      if (service !== 'google')
-        throw new Error("Accounts.ui.config: `requestOfflineToken` only supported for Google login at the moment.");
-
-      if (Accounts.ui._options.requestOfflineToken[service]) {
-        throw new Error("Accounts.ui.config: Can't set `requestOfflineToken` more than once for " + service);
+    each(options.requestOfflineToken, (value, service) => {
+      if (service !== 'google') {
+        throw new Error('Accounts.ui.config: `requestOfflineToken` only supported for Google login at the moment.');
       }
-      else {
+      if (Accounts.ui._options.requestOfflineToken[service]) {
+        throw new Error(`Accounts.ui.config: Can't set \`requestOfflineToken\` more than once for ${service}`);
+      } else {
         Accounts.ui._options.requestOfflineToken[service] = value;
       }
     });
@@ -131,14 +130,14 @@ Accounts.ui.config = function(options) {
 
   // deal with `forceApprovalPrompt`
   if (options.forceApprovalPrompt) {
-    each(options.forceApprovalPrompt, function (value, service) {
-      if (service !== 'google')
-        throw new Error("Accounts.ui.config: `forceApprovalPrompt` only supported for Google login at the moment.");
+    each(options.forceApprovalPrompt, (value, service) => {
+      if (service !== 'google') {
+        throw new Error('Accounts.ui.config: `forceApprovalPrompt` only supported for Google login at the moment.');
+      }
 
       if (Accounts.ui._options.forceApprovalPrompt[service]) {
-        throw new Error("Accounts.ui.config: Can't set `forceApprovalPrompt` more than once for " + service);
-      }
-      else {
+        throw new Error(`Accounts.ui.config: Can't set \`forceApprovalPrompt\` more than once for ${service}`);
+      } else {
         Accounts.ui._options.forceApprovalPrompt[service] = value;
       }
     });
@@ -146,71 +145,65 @@ Accounts.ui.config = function(options) {
 
   // deal with `requireEmailVerification`
   if (options.requireEmailVerification) {
-    if (typeof options.requireEmailVerification != 'boolean') {
-      throw new Error(`Accounts.ui.config: "requireEmailVerification" not a boolean`);
-    }
-    else {
+    if (typeof options.requireEmailVerification !== 'boolean') {
+      throw new Error('Accounts.ui.config: "requireEmailVerification" not a boolean');
+    } else {
       Accounts.ui._options.requireEmailVerification = options.requireEmailVerification;
     }
   }
 
   // deal with `minimumPasswordLength`
   if (options.minimumPasswordLength) {
-    if (typeof options.minimumPasswordLength != 'number') {
-      throw new Error(`Accounts.ui.config: "minimumPasswordLength" not a number`);
-    }
-    else {
+    if (typeof options.minimumPasswordLength !== 'number') {
+      throw new Error('Accounts.ui.config: "minimumPasswordLength" not a number');
+    } else {
       Accounts.ui._options.minimumPasswordLength = options.minimumPasswordLength;
     }
   }
 
   // deal with the hooks.
-  for (let hook of ['onSubmitHook', 'onPreSignUpHook', 'onPostSignUpHook']) {
+  for (const hook of ['onSubmitHook', 'onPreSignUpHook', 'onPostSignUpHook']) {
     if (options[hook]) {
-      if (typeof options[hook] != 'function') {
+      if (typeof options[hook] !== 'function') {
         throw new Error(`Accounts.ui.config: "${hook}" not a function`);
-      }
-      else {
+      } else {
         Accounts.ui._options[hook] = options[hook];
       }
     }
   }
 
   // deal with the paths.
-  for (let path of [
+  for (const path of [
     'loginPath',
     'signUpPath',
     'resetPasswordPath',
     'profilePath',
     'changePasswordPath',
-    'homeRoutePath'
+    'homeRoutePath',
   ]) {
     if (options[path]) {
-      if (typeof options[path] != 'string') {
+      if (typeof options[path] !== 'string') {
         throw new Error(`Accounts.ui.config: ${path} is not a string`);
-      }
-      else {
+      } else {
         Accounts.ui._options[path] = options[path];
       }
     }
   }
 
   // deal with redirect hooks.
-  for (let hook of [
-      'onEnrollAccountHook',
-      'onResetPasswordHook',
-      'onVerifyEmailHook',
-      'onSignedInHook',
-      'onSignedOutHook']) {
+  for (const hook of [
+    'onEnrollAccountHook',
+    'onResetPasswordHook',
+    'onVerifyEmailHook',
+    'onSignedInHook',
+    'onSignedOutHook']) {
     if (options[hook]) {
-      if (typeof options[hook] == 'function') {
+      if (typeof options[hook] === 'function') {
         Accounts.ui._options[hook] = options[hook];
-      }
-      else if (typeof options[hook] == 'string') {
+      } else if (typeof options[hook] === 'string') {
         // TODO Agnostically deal with redirects
-        //Accounts.ui._options[hook] = () => redirect(options[hook]);
-      }
-      else {
+        // Accounts.ui._options[hook] = () => redirect(options[hook]);
+      } else {
         throw new Error(`Accounts.ui.config: "${hook}" not a function or an absolute or relative path`);
       }
     }
